@@ -1,0 +1,86 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider   = "prisma-client-js"
+  output     = "../app/generated/prisma"
+  engineType = "library"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ── User model ───────────────────────────────────────────────────────────────
+model User {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  email          String     @unique
+  nombreCompleto String
+  telefono       String?
+  password       String // store hashed value only
+  status         UserStatus @default(ACTIVE)
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  BANNED
+}
+
+// ── SpaceCraft vehicle model ──────────────────────────────────────────────────
+model SpaceCraft {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // ── General info ─────────────────────────────────────────────────────────────
+  name        String // e.g. "El Chepe Galáctico"
+  nationality String? // ISO country code or full name
+  maxSpeed    Float? // km/h
+  buildYear   Int? // e.g. 2023
+  price       Float? // price in MXN
+  imageUrl    String? // URL to spacecraft image
+
+  // ── Orbital telemetry ────────────────────────────────────────────────────────
+  inertialVelocity Float? // km/s
+  altitude         Float? // km
+  apogee           Float? // km
+  perigee          Float? // km
+  inclination      Float? // degrees
+  rangeToISS       Float? // km
+
+  // ── Environmental / life-support sensors ────────────────────────────────────
+  ppo2          Float? // partial pressure O₂, psia
+  cabinTemp     Float? // °C
+  cabinPressure Float? // psia
+  co2           Float? // mmHg
+
+  // ── Thermal control loops ────────────────────────────────────────────────────
+  loopATemp Float? // °C
+  loopBTemp Float? // °C
+
+  // ── Electrical power ─────────────────────────────────────────────────────────
+  netPwr1 Float? // Watts
+  netPwr2 Float? // Watts
+
+  // ── Connection statuses ──────────────────────────────────────────────────────
+  manualRigsConnected Boolean @default(false)
+  changelogConnected  Boolean @default(false)
+  airlockConnected    Boolean @default(false)
+  wingConnected       Boolean @default(false)
+
+  // ── System checks (true = Normal/OK, false = issue/awaiting) ────────────────
+  allSystemsCheck       Boolean @default(true)
+  rendezvousBurnSlow    Boolean @default(true)
+  prepareRendezvousBurn Boolean @default(true)
+  thermalShieldApplied  Boolean @default(false)
+  burnGoNoGo            Boolean @default(true)
+  powerCompletion       Boolean @default(false)
+  stationDeckCheck      Boolean @default(true)
+
+  // ── Cabin mics ────────────────────────────────────────────────────────────────
+  cabinMicsRecording Boolean @default(false)
+}
