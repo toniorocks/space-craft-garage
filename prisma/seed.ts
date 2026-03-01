@@ -4,7 +4,7 @@ import { resolve } from "path";
 // Load .env from the project root (needed when running outside Next.js)
 config({ path: resolve(process.cwd(), ".env") });
 
-import { PrismaClient } from "../app/generated/prisma";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
