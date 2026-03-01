@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getAllSpaceCrafts } from "@/lib/services/spacecraft.service";
+import { OpenModalTestButton } from "./components/modal/OpenModalTestButton";
 
 export default async function Home() {
   const spacecrafts = await getAllSpaceCrafts();
@@ -84,7 +85,11 @@ export default async function Home() {
           ))}
         </div>
       )}
+      <div className="flex justify-center mt-10">
+        <OpenModalTestButton />
+      </div>
     </div>
+
   );
 }
 
