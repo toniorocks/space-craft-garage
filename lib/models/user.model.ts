@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { UserStatus } from "@/app/generated/prisma";
+import { UserStatus } from "@prisma/client";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
