@@ -14,14 +14,37 @@ export function LoginForm({
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
     const [isPending, setIsPending] = useState(false);
+    const [isValid, setIsValid] = useState(false);
     const { closeModal } = useModal();
+
+    const checkValidity = (formData: FormData) => {
+        const email = formData.get("email") as string;
+        const password = formData.get("password") as string;
+
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return false;
+        if (!password) return false;
+
+        return true;
+    };
+
+    const handleChange = (e: React.FormEvent<HTMLFormElement>) => {
+        const formData = new FormData(e.currentTarget);
+        setIsValid(checkValidity(formData));
+        if (error) setError(null);
+    };
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setIsPending(true);
         setError(null);
 
         const formData = new FormData(e.currentTarget);
+
+        if (!checkValidity(formData)) {
+            return;
+        }
+
+        setIsPending(true);
+
         const result = await processLogin(formData);
 
         if (result.error) {
@@ -51,7 +74,7 @@ export function LoginForm({
     }
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} onChange={handleChange} className="space-y-4">
             {error && (
                 <div className="p-3 rounded-lg bg-red-900/50 border border-red-800 text-red-300 text-sm">
                     {error}
@@ -88,7 +111,7 @@ export function LoginForm({
 
             <button
                 type="submit"
-                disabled={isPending}
+                disabled={!isValid || isPending}
                 className="w-full mt-4 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 disabled:bg-indigo-800 disabled:text-indigo-400 text-white font-medium py-2 px-4 rounded-lg transition-colors flex justify-center items-center"
             >
                 {isPending ? "Ingresando..." : "Iniciar Sesión"}

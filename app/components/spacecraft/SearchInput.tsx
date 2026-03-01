@@ -1,16 +1,17 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useTransition } from "react";
+import { useTransition, useRef } from "react";
 
 export function SearchInput() {
     const searchParams = useSearchParams();
     const pathname = usePathname();
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
+    const timeoutId = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const handleSearch = (term: string) => {
-        const params = new URLSearchParams(searchParams);
+        const params = new URLSearchParams(searchParams.toString());
         if (term) {
             params.set("query", term);
         } else {
@@ -34,7 +35,11 @@ export function SearchInput() {
                 className="w-full pl-10 pr-4 py-2 bg-[#1B2142]/80 border border-[#2D3560] rounded-lg text-white placeholder-[#A1A7CD] focus:outline-none focus:border-[#4DEEEA]/50 focus:ring-1 focus:ring-[#4DEEEA]/50 transition-all shadow-[0_4px_12px_rgba(0,0,0,0.3)] backdrop-blur-sm"
                 defaultValue={searchParams.get("query")?.toString()}
                 onChange={(e) => {
-                    handleSearch(e.target.value);
+                    const val = e.target.value.trim();
+                    if (timeoutId.current) clearTimeout(timeoutId.current);
+                    timeoutId.current = setTimeout(() => {
+                        handleSearch(val);
+                    }, 400);
                 }}
             />
         </div>
