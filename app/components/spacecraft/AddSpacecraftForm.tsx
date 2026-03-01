@@ -12,14 +12,55 @@ export function AddSpacecraftForm({
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
     const [isPending, setIsPending] = useState(false);
+    const [isValid, setIsValid] = useState(false);
     const { closeModal } = useModal();
+
+    const checkValidity = (formData: FormData) => {
+        const name = formData.get("name") as string;
+        const maxSpeed = formData.get("maxSpeed") as string;
+        const buildYear = formData.get("buildYear") as string;
+        const price = formData.get("price") as string;
+        const imageUrl = formData.get("imageUrl") as string;
+
+        if (!name || name.trim().length < 2) return false;
+        if (maxSpeed && isNaN(Number(maxSpeed))) return false;
+
+        if (buildYear) {
+            const year = Number(buildYear);
+            if (isNaN(year) || year < 1900 || year > new Date().getFullYear() + 10) return false;
+        }
+
+        if (price && isNaN(Number(price))) return false;
+
+        if (imageUrl) {
+            try {
+                new URL(imageUrl);
+            } catch (err) {
+                return false;
+            }
+        }
+
+        return true;
+    };
+
+    const handleChange = (e: React.FormEvent<HTMLFormElement>) => {
+        const formData = new FormData(e.currentTarget);
+        setIsValid(checkValidity(formData));
+        if (error) setError(null);
+    };
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setIsPending(true);
         setError(null);
 
         const formData = new FormData(e.currentTarget);
+
+        if (!checkValidity(formData)) {
+            return;
+        }
+
+        setIsPending(true);
+
         const result = await processAddSpacecraft(formData);
 
         if (result.error) {
@@ -51,7 +92,7 @@ export function AddSpacecraftForm({
     }
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} onChange={handleChange} className="space-y-4">
             {error && (
                 <div className="p-3 rounded-lg bg-red-900/50 border border-red-800 text-red-300 text-sm">
                     {error}
@@ -141,7 +182,7 @@ export function AddSpacecraftForm({
 
             <button
                 type="submit"
-                disabled={isPending}
+                disabled={!isValid || isPending}
                 className="w-full mt-6 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 disabled:bg-indigo-800 disabled:text-indigo-400 text-white font-medium py-2 px-4 rounded-lg transition-colors flex justify-center items-center"
             >
                 {isPending ? "Registrando..." : "Registrar Nave"}
