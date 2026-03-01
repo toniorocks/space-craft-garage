@@ -4,7 +4,13 @@ import { useState } from "react";
 import { processLogin } from "@/app/actions/auth.actions";
 import { useModal } from "@/lib/services/modal.service";
 
-export function LoginForm() {
+export function LoginForm({
+    onSuccess,
+    onSwitchToRegister,
+}: {
+    onSuccess?: () => void;
+    onSwitchToRegister?: () => void;
+} = {}) {
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
     const [isPending, setIsPending] = useState(false);
@@ -24,7 +30,11 @@ export function LoginForm() {
         } else if (result.success) {
             setSuccess(true);
             setTimeout(() => {
-                closeModal();
+                if (onSuccess) {
+                    onSuccess();
+                } else {
+                    closeModal();
+                }
             }, 1500);
         }
     };
@@ -83,6 +93,18 @@ export function LoginForm() {
             >
                 {isPending ? "Ingresando..." : "Iniciar Sesión"}
             </button>
+
+            {onSwitchToRegister && (
+                <div className="mt-4 text-center">
+                    <button
+                        type="button"
+                        onClick={onSwitchToRegister}
+                        className="text-sm text-zinc-400 hover:text-indigo-400 transition-colors"
+                    >
+                        ¿No tienes cuenta? Regístrate
+                    </button>
+                </div>
+            )}
         </form>
     );
 }

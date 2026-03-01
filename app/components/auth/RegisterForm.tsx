@@ -4,7 +4,13 @@ import { useState } from "react";
 import { processRegistration } from "@/app/actions/auth.actions";
 import { useModal } from "@/lib/services/modal.service";
 
-export function RegisterForm() {
+export function RegisterForm({
+    onSuccess,
+    onSwitchToLogin,
+}: {
+    onSuccess?: () => void;
+    onSwitchToLogin?: () => void;
+} = {}) {
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
     const [isPending, setIsPending] = useState(false);
@@ -24,7 +30,13 @@ export function RegisterForm() {
         } else if (result.success) {
             setSuccess(true);
             setTimeout(() => {
-                closeModal();
+                if (onSwitchToLogin) {
+                    onSwitchToLogin();
+                } else if (onSuccess) {
+                    onSuccess();
+                } else {
+                    closeModal();
+                }
             }, 2000);
         }
     };
@@ -35,7 +47,9 @@ export function RegisterForm() {
                 <p className="text-emerald-400 font-medium text-lg mb-2">
                     ✅ ¡Registro exitoso!
                 </p>
-                <p className="text-zinc-400 text-sm">Cerrando modal...</p>
+                <p className="text-zinc-400 text-sm">
+                    {onSwitchToLogin ? "Redirigiendo al inicio de sesión..." : "Cerrando modal..."}
+                </p>
             </div>
         );
     }
@@ -111,6 +125,18 @@ export function RegisterForm() {
             >
                 {isPending ? "Registrando..." : "Registrarse"}
             </button>
+
+            {onSwitchToLogin && (
+                <div className="mt-4 text-center">
+                    <button
+                        type="button"
+                        onClick={onSwitchToLogin}
+                        className="text-sm text-zinc-400 hover:text-indigo-400 transition-colors"
+                    >
+                        ¿Ya tienes cuenta? Inicia Sesión
+                    </button>
+                </div>
+            )}
         </form>
     );
 }
