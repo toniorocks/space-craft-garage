@@ -1,3 +1,6 @@
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 import Link from "next/link";
 import { getAllSpaceCrafts } from "@/lib/services/spacecraft.service";
 import { OpenModalTestButton } from "./components/modal/OpenModalTestButton";
