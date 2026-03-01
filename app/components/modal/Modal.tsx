@@ -46,12 +46,17 @@ export function Modal({ isOpen, title, children, onClose, disableClose = false }
         >
             <div className="relative w-full max-w-[480px] m-4 bg-zinc-900 border border-zinc-700 rounded-2xl shadow-2xl animate-in fade-in zoom-in-95 duration-200">
                 {/* Header */}
-                <div className="flex items-center justify-between p-5 border-b border-zinc-800">
-                    {title && (
-                        <h2 id="modal-title" className="text-lg font-semibold text-zinc-100">
-                            {title}
-                        </h2>
-                    )}
+                <div className="flex items-start justify-between p-5 border-b border-zinc-800">
+                    <div className="flex flex-col">
+                        <h1 className="text-[14px] font-medium tracking-[0.25em] text-white/90 mb-2">
+                            🚀 SPACECRAFT GARAGE
+                        </h1>
+                        {title && (
+                            <h2 id="modal-title" className="text-lg font-semibold text-zinc-100">
+                                {title}
+                            </h2>
+                        )}
+                    </div>
                     {!disableClose && (
                         <button
                             onClick={onClose}
