@@ -8,19 +8,20 @@ interface ModalProps {
     title?: string;
     children: ReactNode;
     onClose: () => void;
+    disableClose?: boolean;
 }
 
-export function Modal({ isOpen, title, children, onClose }: ModalProps) {
+export function Modal({ isOpen, title, children, onClose, disableClose = false }: ModalProps) {
     const overlayRef = useRef<HTMLDivElement>(null);
 
     // Close on Escape key
     useEffect(() => {
         const handleKey = (e: KeyboardEvent) => {
-            if (e.key === "Escape") onClose();
+            if (e.key === "Escape" && !disableClose) onClose();
         };
         if (isOpen) document.addEventListener("keydown", handleKey);
         return () => document.removeEventListener("keydown", handleKey);
-    }, [isOpen, onClose]);
+    }, [isOpen, onClose, disableClose]);
 
     // Prevent body scroll while open
     useEffect(() => {
@@ -31,7 +32,7 @@ export function Modal({ isOpen, title, children, onClose }: ModalProps) {
     if (!isOpen) return null;
 
     const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (e.target === overlayRef.current) onClose();
+        if (e.target === overlayRef.current && !disableClose) onClose();
     };
 
     return (
@@ -51,13 +52,15 @@ export function Modal({ isOpen, title, children, onClose }: ModalProps) {
                             {title}
                         </h2>
                     )}
-                    <button
-                        onClick={onClose}
-                        className="text-zinc-500 hover:text-zinc-200 transition-colors p-1"
-                        aria-label="Cerrar modal"
-                    >
-                        ✕
-                    </button>
+                    {!disableClose && (
+                        <button
+                            onClick={onClose}
+                            className="text-zinc-500 hover:text-zinc-200 transition-colors p-1"
+                            aria-label="Cerrar modal"
+                        >
+                            ✕
+                        </button>
+                    )}
                 </div>
 
                 {/* Content */}

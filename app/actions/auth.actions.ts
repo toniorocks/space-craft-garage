@@ -28,6 +28,7 @@ export async function processRegistration(
         await createSession(user.id.toString());
         return { success: true, user };
     } catch (e: any) {
+        console.error("Registration Error:", e);
         if (e.name === "EmailAlreadyInUseError") {
             return { error: e.message };
         }
